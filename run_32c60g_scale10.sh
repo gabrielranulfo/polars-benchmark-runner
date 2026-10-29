@@ -1,20 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=polars_benchmark_32c60g_scale10
-#SBATCH --partition=draco
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=32
-#SBATCH --mem=60G
-#SBATCH --time=20:00:00
-#SBATCH --output=%x_%j.out
-#SBATCH --error=%x_%j.err
-ulimit -v $((60 * 1024 * 1024))
 
-echo "Slurm CPUs: $SLURM_CPUS_PER_TASK"
-echo "Slurm Memória: $SLURM_MEM_PER_NODE"
+export SPARK_DRIVER_MEMORY='40g'
+export SPARK_EXECUTOR_MEMORY='10g'
 
 export escala=10.0
-export rep=50
+export rep=30
 export imagem="polars-benchmark-32c60g"
 
 export POLARS_MAX_THREADS=32
@@ -49,6 +39,8 @@ do
       -e SPARK_DRIVER_CORES=$SPARK_DRIVER_CORES \
       -e SPARK_DEFAULT_PARALLELISM=$SPARK_DEFAULT_PARALLELISM \
       -e SPARK_SQL_SHUFFLE_PARTITIONS=$SPARK_SQL_SHUFFLE_PARTITIONS \
+      -e SPARK_DRIVER_MEMORY=$SPARK_DRIVER_MEMORY \
+      -e SPARK_EXECUTOR_MEMORY=$SPARK_EXECUTOR_MEMORY \
       $imagem \
       bash -c "cd /root/polars-benchmark && ./run.sh"
 
